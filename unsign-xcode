@@ -21,7 +21,7 @@ for filename in ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins/*
 done
 
 echo "Installing unsign command"
-make;
+make
 sudo cp unsign /Applications/Xcode.app/Contents/MacOS
 
 
