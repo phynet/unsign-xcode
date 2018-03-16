@@ -20,6 +20,11 @@ for filename in ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins/*
     defaults write "$filename/Contents/Info" DVTPlugInCompatibilityUUIDs -array-add $XCODEUUID;
 done
 
+echo "Installing unsign command"
+make;
+sudo cp unsign /Applications/Xcode.app/Contents/MacOS
+
+
 unsign=./unsign
 if [ ! -f $unsign ]; then
     echo "Run this from a directory containing the unsign command."
@@ -28,7 +33,7 @@ fi
 
 XcodeDir=/Applications/Xcode.app/Contents/MacOS
 if [ -f $XcodeDir/Xcode.signed ]; then
-    echo "Already unsigned. Nothing to do."
+    echo "Already unsigned. Nothing to do. Exiting"
     exit 0
 fi
 
