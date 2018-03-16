@@ -1,0 +1,37 @@
+#!/bin/bash
+XcodePid=$(ps aux | grep -i Xcode | wc -l)
+if [ $XcodePid -gt 1 ]
+then
+    read -p "I need to close Xcode. Is that OK? (y/n)? " choice
+     case "$choice" in
+       y|Y )
+            echo killall Xcode
+            kill $(ps aux | grep 'Xcode' | awk '{print $2}');;
+       * )
+        echo "OK, bye then."; exit 0;;
+    esac
+fi
+
+
+echo "Updating Plug-in UUID"
+XCODEUUID=`defaults read /Applications/Xcode.app/Contents/Info DVTPlugInCompatibilityUUID`
+echo $XCODEUUID
+for filename in ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins/*; do
+    defaults write "$filename/Contents/Info" DVTPlugInCompatibilityUUIDs -array-add $XCODEUUID;
+done
+
+unsign=./unsign
+if [ ! -f $unsign ]; then
+    echo "Run this from a directory containing the unsign command."
+    exit 0
+fi
+
+XcodeDir=/Applications/Xcode.app/Contents/MacOS
+if [ -f $XcodeDir/Xcode.signed ]; then
+    echo "Already unsigned. Nothing to do."
+    exit 0
+fi
+
+sudo $unsign $XcodeDir/Xcode
+sudo mv $XcodeDir/Xcode $XcodeDir/Xcode.signed
+sudo ln -sf $XcodeDir/Xcode.unsigned $XcodeDir/Xcode
