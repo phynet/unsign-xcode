@@ -2,6 +2,9 @@
 
 Sometimes you need to remove code signatures to Xcode. Why?...well, simple: you need more functionality than Apple gives you today. And for example, if you want to add some colors to your terminal when printing in debug state, it's necessary to do this. Speaking of hacking, right?. So I've created this local (not uploaded to homebrew repo yet) homebrew formula to help me out unsign Xcode. This doesn't have tests, so be aware of this. For me this is working fine, but if you find any bug, contact me and I will try to sort it out :)
 
+### Note BTW: you don't need to clone this repo. Just follow the instructions below to get it done!
+
+
 # How to use 
 
   Well, I've created a homebrew command to unsign Xcode, because it takes a lot of steps to unsign, and I usually tend to forget everything when I'm not using it constantly, and because it's cool. Thanks homebrew!. Cutting straight to the point:
