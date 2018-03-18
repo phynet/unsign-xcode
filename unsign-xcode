@@ -5,13 +5,27 @@ then
     read -p "I need to close Xcode. Is that OK? (y/n)? " choice
      case "$choice" in
        y|Y )
-            echo killall Xcode
-            kill $(ps aux | grep 'Xcode' | awk '{print $2}');;
+            echo killing Xcode
+            pkill Xcode;;
        * )
         echo "OK, bye then."; exit 0;;
     esac
 fi
 
+cacheDir=/Library/Caches/Homebrew
+XcodeDir=/Applications/Xcode.app/Contents/MacOS
+cacheUnsign=$cacheDir/unsign
+
+if [ -f $XcodeDir/Xcode.signed ]; then
+    echo "Already unsigned. Nothing to do. Exiting"
+    exit 0
+fi
+
+if [ ! -f $cacheDir ]; then
+    echo "creating Homebrew cache"
+    cd /Library/Caches/
+    mkdir Homebrew
+fi
 
 echo "Updating Plug-in UUID"
 XCODEUUID=`defaults read /Applications/Xcode.app/Contents/Info DVTPlugInCompatibilityUUID`
@@ -20,7 +34,10 @@ for filename in ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins/*
     defaults write "$filename/Contents/Info" DVTPlugInCompatibilityUUIDs -array-add $XCODEUUID;
 done
 
+cd $cacheDir
+git clone https://github.com/phynet/unsign.git
 echo "Installing unsign command"
+cd unsign
 make
 sudo cp unsign /Applications/Xcode.app/Contents/MacOS
 
@@ -31,12 +48,7 @@ if [ ! -f $unsign ]; then
     exit 0
 fi
 
-XcodeDir=/Applications/Xcode.app/Contents/MacOS
-if [ -f $XcodeDir/Xcode.signed ]; then
-    echo "Already unsigned. Nothing to do. Exiting"
-    exit 0
-fi
-
 sudo $unsign $XcodeDir/Xcode
 sudo mv $XcodeDir/Xcode $XcodeDir/Xcode.signed
 sudo ln -sf $XcodeDir/Xcode.unsigned $XcodeDir/Xcode
+rm -rf $cacheUnsign
